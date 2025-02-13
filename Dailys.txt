@@ -1,0 +1,2 @@
+-Arreglar las secciones de estadisticas que no muestra los numeros
+-Y mejorar un poco mas el frontend

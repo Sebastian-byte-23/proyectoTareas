@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from database import db, init_app
 from flask_migrate import Migrate
@@ -9,17 +9,13 @@ import pandas as pd
 import matplotlib
 matplotlib.use('Agg')  # Cambia el backend a un backend no interactivo
 import matplotlib.pyplot as plt
-import os
 
 
-    
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://tasks_user:123456@localhost/tasks_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-if not os.path.exists('static/images'):
-    os.makedirs('static/images')
 
 # Inicializar la base de datos
 db.init_app(app)
@@ -151,8 +147,7 @@ def add_task():
     new_task = Task(title=title, description=description, user_id=current_user.id)
     db.session.add(new_task)
     db.session.commit()
-
-    generate_graphs()
+    
     return redirect('/')
 
 @app.route('/toggle/<int:task_id>', methods=['POST'])
@@ -161,7 +156,6 @@ def toggle_task(task_id):
     if task:
         task.completed = not task.completed
         db.session.commit()
-        generate_graphs()
         return jsonify({'success': True, 'completed': task.completed})
     return jsonify({'success': False}), 404
 
@@ -173,7 +167,6 @@ def delete_task(task_id):
     if task:
         db.session.delete(task)
         db.session.commit()
-        generate_graphs()
         return jsonify(success=True)
     return jsonify(success=False), 404
 
@@ -204,22 +197,6 @@ def search():
     return jsonify({'results': []})
 
 
-
-@app.route('/tasks', methods=['GET'])
-def get_tasks():
-    tasks = Task.query.all()
-
-    # Depuración: Verifica si hay tareas en la base de datos
-    print(f"Tareas encontradas: {tasks}")
-
-    generate_graphs()
-
-    return jsonify({
-        'tasks': [{'id': task.id, 'title': task.title, 'description': task.description, 'completed': task.completed, 'date_added': task.date_added.strftime('%Y-%m-%d')} for task in tasks]
-    })
-
-
-
 @app.route('/load_more', methods=['GET'])
 def load_more_tasks():
     offset = int(request.args.get('offset', 0))
@@ -243,35 +220,24 @@ def load_more_tasks():
         "hasMore": has_more
     })
 
-def generate_graphs():
+@app.route('/tasks', methods=['GET'])
+def get_tasks():
+    # Verificar si el usuario está autenticado
+    if 'user_id' not in session:
+        return redirect(url_for('login'))  # Redirigir a login si no está autenticado
+
     tasks = Task.query.all()
-    data = [{"completed": task.completed, "date_added": task.date_added} for task in tasks]
-    df = pd.DataFrame(data)
+    total_tasks = len(tasks)
+    completed_tasks = len([task for task in tasks if task.completed])
+    pending_tasks = total_tasks - completed_tasks
 
-    completed_count = df['completed'].sum()
-    pending_count = len(df) - completed_count
-    labels = ['Completadas', 'Pendientes']
-    values = [completed_count, pending_count]
+    return jsonify({
+        'total_tasks': total_tasks,
+        'completed_tasks': completed_tasks,
+        'pending_tasks': pending_tasks
+    })
 
-    plt.figure(figsize=(6, 6))
-    plt.pie(values, labels=labels, autopct='%1.1f%%', startangle=140, colors=['#4CAF50', '#F44336'])
-    plt.title('Distribución de Tareas')
-    plt.savefig('static/images/distribution_of_tasks.png')
-    plt.close()
 
-    if not df.empty and 'date_added' in df.columns:
-        df['date_added'] = pd.to_datetime(df['date_added'])
-        tasks_per_day = df.groupby(df['date_added'].dt.date).size()
-
-        plt.figure(figsize=(10, 6))
-        tasks_per_day.plot(kind='bar', color='skyblue')
-        plt.title('Tareas Creadas por Día')
-        plt.xlabel('Fecha')
-        plt.ylabel('Número de Tareas')
-        plt.xticks(rotation=45)
-        plt.tight_layout()
-        plt.savefig('static/images/tasks_per_day.png')
-        plt.close()
 
 if __name__ == '__main__':
     with app.app_context():
