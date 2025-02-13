@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-r from-blue-300 to-blue-500 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-6 rounded-lg shadow-md w-80">
+        <h2 class="text-2xl font-semibold text-gray-700 text-center mb-4">Registro</h2>
+
+        <form method="POST">
+            <div class="mb-3">
+                <input type="text" name="username" placeholder="Nombre de usuario" required
+                    class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none">
+            </div>
+
+            <div class="mb-3">
+                <input type="email" name="email" placeholder="Correo electrónico" required
+                    class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none">
+            </div>
+
+            <div class="mb-4">
+                <input type="password" name="password" placeholder="Contraseña" required
+                    class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none">
+            </div>
+
+            <button type="submit"
+                class="w-full bg-blue-600 text-white py-2 rounded-md font-medium hover:bg-blue-700 transition duration-200">
+                Registrar
+            </button>
+        </form>
+
+        <!-- Botón para volver al login -->
+        <div class="text-center mt-4">
+            <p class="text-gray-600 text-sm">¿Ya tienes una cuenta?</p>
+            <a href="/login"
+                class="block mt-2 w-full bg-gray-200 text-gray-800 py-2 rounded-md font-medium hover:bg-gray-300 transition duration-200">
+                Iniciar Sesión
+            </a>
+        </div>
+    </div>
+
+</body>
+
+</html>

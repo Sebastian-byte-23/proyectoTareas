@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Encabezado principal -->
+<div class="text-center mb-12">
+    <h1 class="text-4xl font-extrabold text-gray-800">Análisis de Tareas</h1>
+    <p class="text-gray-600 mt-2">Una vista general de las tareas completadas y pendientes</p>
+</div>
+
+<!-- Contenedor principal -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+    <!-- Gráfico de distribución de tareas -->
+    <div class="flex flex-col items-center">
+        <h2 class="text-2xl font-bold text-blue-600 mb-4">Distribución de Tareas</h2>
+        <img src="{{ url_for('static', filename='images/distribution_of_tasks.png') }}" alt="Distribución de Tareas"
+            class="rounded-xl shadow-lg w-full md:w-3/4 hover:scale-105 transform transition duration-300">
+    </div>
+
+    <!-- Gráfico de tareas creadas por día -->
+    <div class="flex flex-col items-center w-full">
+        <h2 class="text-2xl font-bold text-blue-600 mb-4">Tareas Creadas por Día</h2>
+        <img src="{{ url_for('static', filename='images/tasks_per_day.png') }}" alt="Tareas por Día"
+            class="rounded-xl shadow-lg w-full md:w-5/6 lg:w-4/5 xl:w-4/5 hover:scale-110 transform transition duration-300">
+    </div>
+
+
+</div>
+
+<!-- Gráfico de progreso en el tiempo (en ancho completo) -->
+<div class="flex justify-center mt-12">
+    <div class="w-full md:w-3/4">
+        <h2 class="text-2xl font-bold text-blue-600 text-center mb-4">Progreso en el Tiempo</h2>
+        <img src="{{ url_for('static', filename='images/progress_over_time.png') }}" alt="Progreso Temporal de Tareas"
+            class="rounded-lg shadow-lg w-full">
+    </div>
+</div>
+
+<!-- Botón para regresar -->
+<div class="mt-12 text-center">
+    <a href="/"
+        class="inline-block bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-blue-600 hover:shadow-2xl transition duration-300">
+        Volver a la Lista de Tareas
+    </a>
+</div>
+
+{% endblock %}
